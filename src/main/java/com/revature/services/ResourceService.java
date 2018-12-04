@@ -26,7 +26,7 @@ public class ResourceService {
 
 	public Resource getResourceById(int id) {
 		return resourceRepo.getResourceById(id);
-	}
+	}//testing 
 	
 	public List<Resource> getResourcesById(int[] ids) {
 		return resourceRepo.getResourcesById(ids);
