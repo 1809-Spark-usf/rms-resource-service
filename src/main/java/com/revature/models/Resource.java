@@ -1,6 +1,5 @@
 package com.revature.models;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
