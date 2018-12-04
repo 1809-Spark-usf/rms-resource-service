@@ -34,4 +34,7 @@ public class ResourceService {
 		return resourceRepo.getResourcesById(ids);
 	}
 	
+	public Resource save(Resource resource) {
+		return resourceRepo.save(resource);
+	}
 }
