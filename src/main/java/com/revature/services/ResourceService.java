@@ -26,14 +26,17 @@ public class ResourceService {
 		return allResources;
 	}
 
+	//tested
 	public Resource getResourceById(int id) {
 		return resourceRepo.getResourceById(id);
-	}//testing 
+	} 
 	
+	//tested
 	public List<Resource> getResourcesById(int[] ids) {
 		return resourceRepo.getResourcesById(ids);
 	}
 	
+	//testing
 	public Resource save(Resource resource) {
 		return resourceRepo.save(resource);
 	}
