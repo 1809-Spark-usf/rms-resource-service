@@ -3,7 +3,6 @@ package com.revature.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -60,10 +59,9 @@ public class ResourceController {
 	 * @return
 	 */
 	@GetMapping("")
-	public List<Resource> getResources(Pageable pageable) {
-		return resourceService.getAllResources(pageable);
+	public List<Resource> getResources() {
+		return resourceService.getAllResources();
 	}
-	
 	
 	
 	/**
