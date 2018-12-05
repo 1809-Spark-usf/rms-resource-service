@@ -35,7 +35,7 @@ public class ResourceController {
 	 * @return 
 	 */
 	@PostMapping("")
-	public Resource addResoure(@RequestBody Resource resource) {
+	public Resource addResource(@RequestBody Resource resource) {
 			return resourceService.save(resource);	
 	}
 	
