@@ -26,19 +26,17 @@ public class ResourceController {
 		super();
 		this.resourceService = resourceService;
 	}
-	
-	@PostMapping("")
-	public Resource saveResource(@RequestBody Resource resource) {
-		return resourceService.save(resource);
-	}
+
 	/**
 	 * Post request takes in a resource and saves it to the database.
 	 * Handles bean validation.
 	 * @param resource
+	 * @return 
+	 * @return 
 	 */
 	@PostMapping("")
-	public void addResoure(@RequestBody Resource resource) {
-		
+	public Resource addResoure(@RequestBody Resource resource) {
+			return resourceService.save(resource);	
 	}
 	
 	/**
