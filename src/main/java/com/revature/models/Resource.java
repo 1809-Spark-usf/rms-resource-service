@@ -7,16 +7,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-enum Type {
-	CUBICLE, OFFICE
-}
-
-enum Location {
-	RESTON, USF
-}
+import com.revature.enumerations.Type;
 
 @Entity
 @Table(name = "resources")
@@ -27,8 +23,11 @@ public class Resource {
 	private int id;
 	@NotNull(message = "Type is required.")
 	private Type type;
-	@NotNull(message = "Location is required.")
-	private Location location;
+	
+	@NotNull(message="Location is required.")
+	@ManyToOne
+	@JoinColumn(name="campus_id", nullable=false)
+	private Campus campus;
 	private String name;
 	private boolean disabled;
 	private boolean inactive;
@@ -134,15 +133,7 @@ public class Resource {
 	public void setReservableBefore(LocalDateTime reservableBefore) {
 		this.reservableBefore = reservableBefore;
 	}
-
-	public Location getLocation() {
-		return location;
-	}
-
-	public void setLocation(Location location) {
-		this.location = location;
-	}
-
+	
 	public String getName() {
 		return name;
 	}
@@ -159,17 +150,25 @@ public class Resource {
 		this.useableFrom = useableFrom;
 	}
 
+	public Campus getCampus() {
+		return campus;
+	}
+
+	public void setCampus(Campus campus) {
+		this.campus = campus;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((campus == null) ? 0 : campus.hashCode());
 		result = prime * result + (disabled ? 1231 : 1237);
 		result = prime * result + (hasComputer ? 1231 : 1237);
 		result = prime * result + (hasEthernet ? 1231 : 1237);
 		result = prime * result + (hasMicrophone ? 1231 : 1237);
 		result = prime * result + id;
 		result = prime * result + (inactive ? 1231 : 1237);
-		result = prime * result + ((location == null) ? 0 : location.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + numberOfOutlets;
 		result = prime * result + ((reservableAfter == null) ? 0 : reservableAfter.hashCode());
@@ -189,6 +188,11 @@ public class Resource {
 		if (getClass() != obj.getClass())
 			return false;
 		Resource other = (Resource) obj;
+		if (campus == null) {
+			if (other.campus != null)
+				return false;
+		} else if (!campus.equals(other.campus))
+			return false;
 		if (disabled != other.disabled)
 			return false;
 		if (hasComputer != other.hasComputer)
@@ -200,8 +204,6 @@ public class Resource {
 		if (id != other.id)
 			return false;
 		if (inactive != other.inactive)
-			return false;
-		if (location != other.location)
 			return false;
 		if (name == null) {
 			if (other.name != null)
@@ -233,14 +235,13 @@ public class Resource {
 	}
 
 	public Resource(int id, @NotNull(message = "Type is required.") Type type,
-			@NotNull(message = "Location is required.") Location location, String name, boolean disabled,
-			boolean inactive, boolean retired, LocalDateTime useableFrom, LocalDateTime reservableAfter,
-			LocalDateTime reservableBefore, boolean hasEthernet, boolean hasComputer, int numberOfOutlets,
-			boolean hasMicrophone) {
+			@NotNull(message = "Location is required.") Campus campus, String name, boolean disabled, boolean inactive,
+			boolean retired, LocalDateTime useableFrom, LocalDateTime reservableAfter, LocalDateTime reservableBefore,
+			boolean hasEthernet, boolean hasComputer, int numberOfOutlets, boolean hasMicrophone) {
 		super();
 		this.id = id;
 		this.type = type;
-		this.location = location;
+		this.campus = campus;
 		this.name = name;
 		this.disabled = disabled;
 		this.inactive = inactive;
@@ -261,7 +262,7 @@ public class Resource {
 
 	@Override
 	public String toString() {
-		return "Resource [id=" + id + ", type=" + type + ", location=" + location + ", name=" + name + ", disabled="
+		return "Resource [id=" + id + ", type=" + type + ", campus=" + campus + ", name=" + name + ", disabled="
 				+ disabled + ", inactive=" + inactive + ", retired=" + retired + ", useableFrom=" + useableFrom
 				+ ", reservableAfter=" + reservableAfter + ", reservableBefore=" + reservableBefore + ", hasEthernet="
 				+ hasEthernet + ", hasComputer=" + hasComputer + ", numberOfOutlets=" + numberOfOutlets

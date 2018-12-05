@@ -41,6 +41,11 @@ public class ResourceController {
 		
 	}
 	
+	@GetMapping("/building/{campus}")
+	public List<String> getBuildings(@PathVariable String campus) {
+		return null;
+	}
+	
 	/**
 	 * Takes in a resource and a id
 	 * Gets the resource from the database and replaces it with the incoming resource.
