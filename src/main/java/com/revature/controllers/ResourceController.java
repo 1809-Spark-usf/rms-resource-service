@@ -35,8 +35,13 @@ public class ResourceController {
 	 * @return 
 	 */
 	@PostMapping("")
-	public Resource addResoure(@RequestBody Resource resource) {
+	public Resource addResource(@RequestBody Resource resource) {
 			return resourceService.save(resource);	
+	}
+	
+	@GetMapping("/building/{campus}")
+	public List<String> getBuildings(@PathVariable String campus) {
+		return null;
 	}
 	
 	/**
