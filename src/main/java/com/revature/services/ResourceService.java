@@ -36,7 +36,7 @@ public class ResourceService {
 		return resourceRepo.getResourcesById(ids);
 	}
 	
-	//testing
+	//tested
 	public Resource save(Resource resource) {
 		return resourceRepo.save(resource);
 	}
