@@ -3,7 +3,6 @@ package com.revature.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.revature.models.Resource;
@@ -20,13 +19,12 @@ public class ResourceService {
 		this.resourceRepo = resourceRepo;
 	}
 
-	public List<Resource> getAllResources(Pageable pageable) {
-		List<Resource> allResources = (List<Resource>) resourceRepo.findAll(pageable);
+	public List<Resource> getAllResources() {
+		List<Resource> allResources = resourceRepo.findAll();
 		allResources.removeIf(r -> r.isDisabled() == true);	
+	
 		return allResources;
 	}
-	
-	
 
 	//tested
 	public Resource getResourceById(int id) {
