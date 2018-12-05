@@ -31,7 +31,6 @@ public class ResourceService {
 	public List<Resource> getResourcesById(int[] ids) {
 		return resourceRepo.getResourcesById(ids);
 	}
-	// saves resource into database
 	public Resource save(Resource resource) {
 		return resourceRepo.save(resource);
 	}
