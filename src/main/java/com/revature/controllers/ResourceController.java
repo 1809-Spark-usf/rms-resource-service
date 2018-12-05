@@ -3,9 +3,10 @@ package com.revature.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +27,10 @@ public class ResourceController {
 		this.resourceService = resourceService;
 	}
 	
+	@PostMapping("")
+	public Resource saveResource(@RequestBody Resource resource) {
+		return resourceService.save(resource);
+	}
 	/**
 	 * Post request takes in a resource and saves it to the database.
 	 * Handles bean validation.
@@ -57,8 +62,8 @@ public class ResourceController {
 	 * @return
 	 */
 	@GetMapping("")
-	public List<Resource> getResources() {
-		return null;
+	public List<Resource> getResources(Pageable pageable) {
+		return resourceService.getAllResources(pageable);
 	}
 	
 	/**
@@ -69,7 +74,7 @@ public class ResourceController {
 	 */
 	@GetMapping("/{id}")
 	public Resource getResources(@PathVariable int id) {
-		return null;
+		return resourceService.getResourceById(id);
 	}
 	
 	/**
@@ -79,6 +84,6 @@ public class ResourceController {
 	 */
 	@GetMapping("/{ids}")
 	public List<Resource> getResources(@PathVariable int[] ids) {
-		return null;
+		return resourceService.getResourcesById(ids);
 	}
 }
