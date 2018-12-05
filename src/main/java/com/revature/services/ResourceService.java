@@ -21,7 +21,9 @@ public class ResourceService {
 	}
 
 	public List<Resource> getAllResources(Pageable pageable) {
-		return resourceRepo.getAllResources(pageable);
+		List<Resource> allResources = resourceRepo.getAllResources(pageable);
+		allResources.removeIf(r -> r.isDisabled() == true);		
+		return allResources;
 	}
 
 	public Resource getResourceById(int id) {
