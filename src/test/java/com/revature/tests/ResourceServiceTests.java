@@ -3,9 +3,12 @@ package com.revature.tests;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.awt.List;
 import java.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.google.common.primitives.Ints;
 import com.revature.enumerations.Type;
 import com.revature.exception.BadRequestException;
 import com.revature.models.Campus;
@@ -46,7 +49,7 @@ public class ResourceServiceTests {
 	@Test(expected = BadRequestException.class)
 	public void TestgetResourceById() throws Exception {
 		// because this is the request expected.
-		when(mockResourceRepository.getResourceById(0)).thenThrow(BadRequestException.class);
+		when(mockResourceRepository.findById(0)).thenThrow(BadRequestException.class);
 		resourceService.getResourceById(0);
 	}
 
@@ -54,14 +57,9 @@ public class ResourceServiceTests {
 	@Test(expected = BadRequestException.class)
 	public void getResourcesById() throws Exception {
 		int[] arrThatContainsAZero = new int[0];
-		when(mockResourceRepository.getResourcesById(arrThatContainsAZero)).thenThrow(BadRequestException.class);
+		Iterable<Integer> iterable = Ints.asList(arrThatContainsAZero);
+		when(mockResourceRepository.findAllById(iterable)).thenThrow(BadRequestException.class);
 		resourceService.getResourcesById(arrThatContainsAZero);
-	}
-	
-	//Testing List<Resource> getAllResources(Pageable pageable)
-	@Test(expected = BadRequestException.class)
-	public void getAllResource() throws Exception {
-//		Pageable pageSpecific =
 	}
 
 	// testing the save method
@@ -117,5 +115,14 @@ public class ResourceServiceTests {
 		when(mockResourceRepository.save(badResource)).thenThrow(BadRequestException.class);
 		resourceService.save(badResource);
 	}
+
+	// testing the update method
+//	@Test(expected = BadRequestException.class)
+//	public void Update() throws Exception {
+//		Resource oldResource = new Resource
+//		when(mockResourceRepository.findById(0)).thenThrow(BadRequestException.class);
+//		resourceService.getResourceById(0);
+//	}
+	
 
 }
