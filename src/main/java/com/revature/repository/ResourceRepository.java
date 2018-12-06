@@ -8,12 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.revature.models.Resource;
 
 @Repository
-public interface ResourceRepository extends JpaRepository<Resource, Integer> {
-
-	
-	public Resource getResourceById(int id);
-	
-	public List<Resource> getResourcesById(int[] id);	
+public interface ResourceRepository extends JpaRepository<Resource, Integer> {	
 	
 	 
 }

@@ -3,8 +3,11 @@ package com.revature.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
+import com.google.common.primitives.Ints;
 import com.revature.models.Resource;
 import com.revature.repository.ResourceRepository;
 
@@ -19,21 +22,31 @@ public class ResourceService {
 		this.resourceRepo = resourceRepo;
 	}
 
-	public List<Resource> getAllResources() {
-		List<Resource> allResources = resourceRepo.findAll();
-		allResources.removeIf(r -> r.isDisabled() == true);	
-	
-		return allResources;
+	public List<Resource> findResources(Resource resource) {
+		return resourceRepo.findAll();
 	}
 
 	public Resource getResourceById(int id) {
-		return resourceRepo.getResourceById(id);
+		return resourceRepo.findById(id).orElseThrow(
+				() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
 	}
 	
 	public List<Resource> getResourcesById(int[] ids) {
-		return resourceRepo.getResourcesById(ids);
+		/* Had to convert the array of ids to an iterable so 
+		 * findAllById() method would work.
+		 */
+		Iterable<Integer> iterable = Ints.asList(ids);
+		return resourceRepo.findAllById(iterable);
 	}
+	
 	public Resource save(Resource resource) {
 		return resourceRepo.save(resource);
+	}
+
+	public void updateResource(Resource resource, int id) {
+		Resource oldResource = resourceRepo.findById(id).orElseThrow(
+				() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
+		resource.setId(oldResource.getId());
+		resourceRepo.save(resource);
 	}
 }
