@@ -35,7 +35,7 @@ public class ResourceService {
 		/* Had to convert the array of ids to an iterable so 
 		 * findAllById() method would work.
 		 */
-		Iterable<Integer> iterable = Ints.asList(ids);
+		List<Integer> iterable = Ints.asList(ids);
 		return resourceRepo.findAllById(iterable);
 	}
 	
@@ -49,4 +49,5 @@ public class ResourceService {
 		resource.setId(oldResource.getId());
 		resourceRepo.save(resource);
 	}
+
 }
