@@ -26,11 +26,15 @@ public class ResourceService {
 		return resourceRepo.findAll();
 	}
 
+	//tested
 	public Resource getResourceById(int id) {
+
 		return resourceRepo.findById(id).orElseThrow(
 				() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
 	}
+
 	
+	//tested
 	public List<Resource> getResourcesById(int[] ids) {
 		/* Had to convert the array of ids to an iterable so 
 		 * findAllById() method would work.
@@ -39,10 +43,13 @@ public class ResourceService {
 		return resourceRepo.findAllById(iterable);
 	}
 	
+//tested
+
 	public Resource save(Resource resource) {
 		return resourceRepo.save(resource);
 	}
 
+	//before testing find how it is changing 
 	public void updateResource(Resource resource, int id) {
 		Resource oldResource = resourceRepo.findById(id).orElseThrow(
 				() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
