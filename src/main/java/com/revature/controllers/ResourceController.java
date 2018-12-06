@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.revature.models.Resource;
@@ -51,7 +52,7 @@ public class ResourceController {
 	 */
 	@PutMapping("/{id}")
 	public void updateResource(@RequestBody Resource resource, @PathVariable int id) {
-		
+		resourceService.updateResource(resource, id);
 	}
 	
 	/**
@@ -59,8 +60,8 @@ public class ResourceController {
 	 * @return
 	 */
 	@GetMapping("")
-	public List<Resource> getResources() {
-		return resourceService.getAllResources();
+	public List<Resource> findResources(@RequestParam Resource resource) {
+		return resourceService.findResources(resource);
 	}
 	
 	
