@@ -3,16 +3,17 @@ package com.revature.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.revature.models.Campus;
 import com.revature.models.Resource;
+import com.revature.services.CampusService;
 import com.revature.services.ResourceService;
 
 @RestController
@@ -20,30 +21,25 @@ import com.revature.services.ResourceService;
 public class ResourceController {
 	
 	ResourceService resourceService;
+	CampusService campusService;
 
 	@Autowired
-	public ResourceController(ResourceService resourceService) {
+	public ResourceController(ResourceService resourceService, CampusService campusService) {
 		super();
 		this.resourceService = resourceService;
+		this.campusService = campusService;
 	}
 	
 	@PostMapping("")
 	public Resource saveResource(@RequestBody Resource resource) {
+		resource.setBuilding(campusService.getBuilding(resource.getBuildingId()));
+		System.out.println(resource);
 		return resourceService.save(resource);
 	}
-	/**
-	 * Post request takes in a resource and saves it to the database.
-	 * Handles bean validation.
-	 * @param resource
-	 */
-	@PostMapping("")
-	public void addResoure(@RequestBody Resource resource) {
-		
-	}
 	
-	@GetMapping("/building/{campus}")
-	public List<String> getBuildings(@PathVariable String campus) {
-		return null;
+	@GetMapping("/campuses")
+	public List<Campus> getBuildings() {
+		return campusService.getCampuses();
 	}
 	
 	/**
@@ -61,10 +57,10 @@ public class ResourceController {
 	 * Returns all resources paginated.
 	 * @return
 	 */
-	@GetMapping("")
-	public List<Resource> getResources(Pageable pageable) {
-		return resourceService.getAllResources(pageable);
-	}
+//	@GetMapping("")
+//	public List<Resource> getResources(Pageable pageable) {
+//		return resourceService.getAllResources(pageable);
+//	}
 	
 	/**
 	 * Gets a specific resource by Id.
@@ -82,8 +78,8 @@ public class ResourceController {
 	 * @param ids
 	 * @return
 	 */
-	@GetMapping("/{ids}")
-	public List<Resource> getResources(@PathVariable int[] ids) {
-		return resourceService.getResourcesById(ids);
+	@GetMapping("availabe/{id}")
+	public List<Resource> getResources(@PathVariable int[] id) {
+		return resourceService.getResourcesById(id);
 	}
 }

@@ -20,18 +20,25 @@ public class ResourceService {
 		this.resourceRepo = resourceRepo;
 	}
 
-	public List<Resource> getAllResources(Pageable pageable) {
-		List<Resource> allResources = resourceRepo.getAllResources(pageable);
-		allResources.removeIf(r -> r.isDisabled() == true);		
-		return allResources;
-	}
+//	public List<Resource> getAllResources(Pageable pageable) {
+//		List<Resource> allResources = resourceRepo.getAllResources(pageable);
+//		allResources.removeIf(r -> r.isDisabled() == true);		
+//		return allResources;
+//	}
 
 	public Resource getResourceById(int id) {
 		return resourceRepo.getResourceById(id);
 	}
 	
 	public List<Resource> getResourcesById(int[] ids) {
-		return resourceRepo.getResourcesById(ids);
+		List<Resource> list = resourceRepo.findAll();
+		for(int i = 0; i < list.size(); i++) {
+			for(int j = 0; j < ids.length; j++) {
+				if(list.get(i).getId() == ids[j])
+					list.remove(i);
+			}
+		}
+		return list;
 	}
 	
 	public Resource save(Resource resource) {
