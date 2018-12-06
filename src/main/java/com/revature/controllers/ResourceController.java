@@ -1,5 +1,6 @@
 package com.revature.controllers;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +10,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.models.Campus;
 import com.revature.models.Resource;
 import com.revature.services.CampusService;
@@ -50,17 +55,25 @@ public class ResourceController {
 	 */
 	@PutMapping("/{id}")
 	public void updateResource(@RequestBody Resource resource, @PathVariable int id) {
-		
+		resourceService.updateResource(resource, id);
 	}
 	
 	/**
 	 * Returns all resources paginated.
 	 * @return
+	 * @throws IOException 
+	 * @throws JsonMappingException 
+	 * @throws JsonParseException 
 	 */
 //	@GetMapping("")
 //	public List<Resource> getResources(Pageable pageable) {
 //		return resourceService.getAllResources(pageable);
 //	}
+	@GetMapping("")
+	public List<Resource> findResources(Resource resource) {
+		return resourceService.findResources(resource);
+	}
+	
 	
 	/**
 	 * Gets a specific resource by Id.
@@ -78,7 +91,7 @@ public class ResourceController {
 	 * @param ids
 	 * @return
 	 */
-	@GetMapping("availabe/{id}")
+	@GetMapping("avaiable/{id}")
 	public List<Resource> getResources(@PathVariable int[] id) {
 		return resourceService.getResourcesById(id);
 	}
