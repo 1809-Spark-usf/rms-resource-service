@@ -46,6 +46,16 @@ public class ResourceController {
 		return campusService.getCampuses();
 	}
 	
+	@GetMapping("/building/{id}")
+	public List<Resource> getByBuildingId(@PathVariable int id) {
+		return resourceService.getResourceByBuildingId(id);
+	}
+	
+	@GetMapping("/campus/{id}")
+	public List<Resource> getByCampus(@PathVariable int id) {
+		return resourceService.getResourcesByCampus(campusService.getCampus(id));
+	}
+	
 	/**
 	 * Takes in a resource and a id
 	 * Gets the resource from the database and replaces it with the incoming resource.

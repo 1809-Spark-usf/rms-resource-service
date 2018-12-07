@@ -39,4 +39,11 @@ public class CampusService {
 		return buildingRepo.getOne(id);
 	}
 
+
+
+
+	public Campus getCampus(int id) {
+		return campusRepo.getOne(id);
+	}
+
 }
