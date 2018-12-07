@@ -1,6 +1,7 @@
 package com.revature.controllers;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,12 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.models.Campus;
 import com.revature.models.Resource;
 import com.revature.services.CampusService;
@@ -91,8 +90,13 @@ public class ResourceController {
 	 * @param ids
 	 * @return
 	 */
-	@GetMapping("avaiable/{id}")
+	@GetMapping("available/{id}")
 	public List<Resource> getResources(@PathVariable int[] id) {
-		return resourceService.getResourcesById(id);
+		Integer[] fakeId = new Integer[id.length];
+		for(int i = 0; i < id.length; i++) {
+			fakeId[i] = id[i];
+		}
+		List<Integer> ids = Arrays.asList(fakeId);
+		return resourceService.getResourcesById(ids);
 	}
 }

@@ -61,7 +61,7 @@ public class ResourceServiceTests {
 		int[] arrThatContainsAZero = new int[0];
 		Iterable<Integer> iterable = Ints.asList(arrThatContainsAZero);
 		when(mockResourceRepository.findAllById(iterable)).thenThrow(BadRequestException.class);
-		resourceService.getResourcesById(arrThatContainsAZero);
+//		resourceService.getResourcesById(arrThatContainsAZero);
 	}
 
 	// testing the save method

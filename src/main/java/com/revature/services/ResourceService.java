@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -26,7 +27,11 @@ public class ResourceService {
 	}
 
 	public List<Resource> findResources(Resource resource) {
-		return resourceRepo.findAll(Example.of(resource));
+		if(resource.getBuildingId() > 0) {
+			resource.setBuilding(buildingRepo.getOne(resource.getBuildingId()));
+			resource.setBuildingId(0);
+		}
+		return resourceRepo.findAll(Example.of(resource, ExampleMatcher.matching().withIgnoreNullValues()));
 	}
 
 
@@ -38,15 +43,16 @@ public class ResourceService {
 
 	
 	//tested
-	public List<Resource> getResourcesById(int[] ids) {
-		List<Resource> list = resourceRepo.findAll();
-		for(int i = 0; i < list.size(); i++) {
-			for(int j = 0; j < ids.length; j++) {
-				if(list.get(i).getId() == ids[j])
-					list.remove(i);
-			}
-		}
-		return list;
+	public List<Resource> getResourcesById(Iterable<Integer> ids) {
+//		List<Resource> list = resourceRepo.findAll();
+//		for(int i = 0; i < list.size(); i++) {
+//			for(int j = 0; j < ids.length; j++) {
+//				if(list.get(i).getId() == ids[j])
+//					list.remove(i);
+//			}
+//		}
+//		return list;
+		return resourceRepo.findAllById(ids);
 	}
 	
 //tested
