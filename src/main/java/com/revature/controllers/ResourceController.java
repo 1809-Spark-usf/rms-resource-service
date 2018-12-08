@@ -1,5 +1,7 @@
 package com.revature.controllers;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,10 +11,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.revature.models.Campus;
 import com.revature.models.Resource;
+import com.revature.services.CampusService;
 import com.revature.services.ResourceService;
 
 @RestController
@@ -20,28 +25,35 @@ import com.revature.services.ResourceService;
 public class ResourceController {
 	
 	ResourceService resourceService;
+	CampusService campusService;
 
 	@Autowired
-	public ResourceController(ResourceService resourceService) {
+	public ResourceController(ResourceService resourceService, CampusService campusService) {
 		super();
 		this.resourceService = resourceService;
-	}
-
-	/**
-	 * Post request takes in a resource and saves it to the database.
-	 * Handles bean validation.
-	 * @param resource
-	 * @return 
-	 * @return 
-	 */
-	@PostMapping("")
-	public Resource addResource(@RequestBody Resource resource) {
-			return resourceService.save(resource);	
+		this.campusService = campusService;
 	}
 	
-	@GetMapping("/building/{campus}")
-	public List<String> getBuildings(@PathVariable String campus) {
-		return null;
+	@PostMapping("")
+	public Resource saveResource(@RequestBody Resource resource) {
+		resource.setBuilding(campusService.getBuilding(resource.getBuildingId()));
+		System.out.println(resource);
+		return resourceService.save(resource);
+	}
+	
+	@GetMapping("/campuses")
+	public List<Campus> getBuildings() {
+		return campusService.getCampuses();
+	}
+	
+	@GetMapping("/building/{id}")
+	public List<Resource> getByBuildingId(@PathVariable int id) {
+		return resourceService.getResourceByBuildingId(id);
+	}
+	
+	@GetMapping("/campus/{id}")
+	public List<Resource> getByCampus(@PathVariable int id) {
+		return resourceService.getResourcesByCampus(campusService.getCampus(id));
 	}
 	
 	/**
@@ -58,9 +70,16 @@ public class ResourceController {
 	/**
 	 * Returns all resources paginated.
 	 * @return
+	 * @throws IOException 
+	 * @throws JsonMappingException 
+	 * @throws JsonParseException 
 	 */
+//	@GetMapping("")
+//	public List<Resource> getResources(Pageable pageable) {
+//		return resourceService.getAllResources(pageable);
+//	}
 	@GetMapping("")
-	public List<Resource> findResources(@RequestParam Resource resource) {
+	public List<Resource> findResources(Resource resource) {
 		return resourceService.findResources(resource);
 	}
 	
@@ -81,8 +100,13 @@ public class ResourceController {
 	 * @param ids
 	 * @return
 	 */
-	@GetMapping("/{ids}")
-	public List<Resource> getResources(@PathVariable int[] ids) {
+	@GetMapping("available/{id}")
+	public List<Resource> getResources(@PathVariable int[] id) {
+		Integer[] fakeId = new Integer[id.length];
+		for(int i = 0; i < id.length; i++) {
+			fakeId[i] = id[i];
+		}
+		List<Integer> ids = Arrays.asList(fakeId);
 		return resourceService.getResourcesById(ids);
 	}
 }
