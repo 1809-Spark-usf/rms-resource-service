@@ -49,7 +49,6 @@ public class ResourceService {
 		return resourceRepo.save(resource);
 	}
 
-	//before testing find how it is changing 
 	public void updateResource(Resource resource, int id) {
 		Resource oldResource = resourceRepo.findById(id).orElseThrow(
 				() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));

@@ -116,13 +116,16 @@ public class ResourceServiceTests {
 		resourceService.save(badResource);
 	}
 
-	// testing the update method
-//	@Test(expected = BadRequestException.class)
-//	public void Update() throws Exception {
-//		Resource oldResource = new Resource
-//		when(mockResourceRepository.findById(0)).thenThrow(BadRequestException.class);
-//		resourceService.getResourceById(0);
-//	}
+	 //testing the update method
+	//As a whole we are updating an existing resource
+	@Test(expected = BadRequestException.class)
+	public void UpdateOldResource() throws Exception {
+		when(mockResourceRepository.findById(0)).thenThrow(BadRequestException.class);
+		Resource oldResource = new Resource(0, type, campus, name, disabled, inactive, retired, useableFrom,
+				reservableAfter, reservableBefore, hasEthernet, hasComputer, numberOfOutlets, hasMicrophone);
+		resourceService.save(oldResource);
+	}
+	
 	
 
 }
