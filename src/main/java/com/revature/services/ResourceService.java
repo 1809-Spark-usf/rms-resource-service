@@ -89,4 +89,10 @@ public class ResourceService {
 		}
 		return resources;
 	}
+
+	public List<Resource> getAllResources() {
+		List<Resource> list = resourceRepo.findAll();
+		System.out.println(list);
+		return list;
+	}
 }

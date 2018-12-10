@@ -28,6 +28,7 @@ public class Resource {
 	private int id;
 	@NotNull(message = "Type is required.")
 	private Type type;
+	@JsonIgnore
 	@Transient
 	private Campus campus;
 	@ManyToOne
