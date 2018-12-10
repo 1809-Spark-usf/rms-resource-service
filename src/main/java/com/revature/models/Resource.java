@@ -196,4 +196,36 @@ public class Resource {
 		this.availableDays = availableDays;
 	}
 
+	public Resource(int id, @NotNull(message = "Type is required.") Type type, Campus campus, Building building,
+			int buildingId, String name, boolean disabled, boolean inactive, boolean retired,
+			LocalDateTime availableStartDate, LocalDateTime reservableAfter, LocalDateTime reservableBefore,
+			List<DayOfWeek> availableDays, boolean hasEthernet, boolean hasComputer, int numberOfOutlets,
+			boolean hasMicrophone) {
+		super();
+		this.id = id;
+		this.type = type;
+		this.campus = campus;
+		this.building = building;
+		this.buildingId = buildingId;
+		this.name = name;
+		this.disabled = disabled;
+		this.inactive = inactive;
+		this.retired = retired;
+		this.availableStartDate = availableStartDate;
+		this.reservableAfter = reservableAfter;
+		this.reservableBefore = reservableBefore;
+		this.availableDays = availableDays;
+		this.hasEthernet = hasEthernet;
+		this.hasComputer = hasComputer;
+		this.numberOfOutlets = numberOfOutlets;
+		this.hasMicrophone = hasMicrophone;
+	}
+
+	public Resource() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
+	
+
 }

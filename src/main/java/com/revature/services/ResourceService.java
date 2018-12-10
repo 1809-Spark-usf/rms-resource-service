@@ -59,24 +59,24 @@ public class ResourceService {
 	}
 	
 //tested
-
 	public Resource save(Resource resource) {
-		resource.setBuilding(buildingRepo.getOne(resource.getBuildingId()));
+//		resource.setBuilding(buildingRepo.getOne(resource.getBuildingId()));
 		return resourceRepo.save(resource);
 	}
-
-	//before testing find how it is changing 
+	
+	
+ 
 	public void updateResource(Resource resource, int id) {
 		resource.setId(id);
 		if(resource.getBuilding() == null)
 			resource.setBuilding(buildingRepo.getOne(resource.getBuildingId()));
 		resourceRepo.save(resource);
 	}
-
+//tested
 	public List<Resource> getResourceByBuildingId(int id) {
 		return resourceRepo.findAllByBuilding_Id(id);
 	}
-
+//tested
 	public List<Resource> getResourcesByCampus(Campus campus) {
 		List<Resource> resources = new ArrayList<>();
 		if(campus != null) {
