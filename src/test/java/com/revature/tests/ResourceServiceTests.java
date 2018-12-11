@@ -20,7 +20,6 @@ import com.revature.repository.ResourceRepository;
 import com.revature.services.ResourceService;
 
 public class ResourceServiceTests {
-	private static final int DayOfWeek = 0;
 	Resource r = null;
 	// mock implementation
 	ResourceRepository mockResourceRepository = mock(ResourceRepository.class);
@@ -60,15 +59,6 @@ public class ResourceServiceTests {
 		when(mockResourceRepository.findById(0)).thenThrow(BadRequestException.class);
 		resourceService.getResourceById(0);
 	}
-
-	// List<Resource> getResourcesById
-//	@Test(expected = BadRequestException.class)
-//	public void getResourcesById() throws Exception {
-//		int[] arrThatContainsAZero = new int[0];
-//		Iterable<Integer> iterable = Ints.asList(arrThatContainsAZero);
-//		when(mockResourceRepository.findAllById(iterable)).thenThrow(BadRequestException.class);
-//		resourceService.getResourcesById(arrThatContainsAZero);
-//	}
 
 	// testing the save method
 	@Test(expected = BadRequestException.class)

@@ -1,7 +1,6 @@
 package com.revature.controllers;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,6 +17,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.revature.models.Campus;
 import com.revature.models.Resource;
+import com.revature.models.ResourceObject;
 import com.revature.services.CampusService;
 import com.revature.services.ResourceService;
 
@@ -36,10 +36,9 @@ public class ResourceController {
 	}
 
 	@PostMapping("")
-	public Resource saveResource(@RequestBody Resource resource) {
+	public Resource saveResource(@RequestBody ResourceObject resource) {
 		resource.setBuilding(campusService.getBuilding(resource.getBuildingId()));
-		System.out.println(resource);
-		return resourceService.save(resource);
+		return resourceService.save(new Resource(resource));
 	}
 
 	@GetMapping("/campuses")
@@ -65,8 +64,8 @@ public class ResourceController {
 	 * @param id
 	 */
 	@PutMapping("/{id}")
-	public void updateResource(@RequestBody Resource resource, @PathVariable int id) {
-		resourceService.updateResource(resource, id);
+	public void updateResource(@RequestBody ResourceObject resource, @PathVariable int id) {
+		resourceService.updateResource(new Resource(resource), id);
 	}
 
 	/**
@@ -77,12 +76,8 @@ public class ResourceController {
 	 * @throws JsonMappingException
 	 * @throws JsonParseException
 	 */
-//	@GetMapping("")
-//	public List<Resource> getResources(Pageable pageable) {
-//		return resourceService.getAllResources(pageable);
-//	}
 	@GetMapping("")
-	public List<Resource> findResources(Resource resource) {
+	public List<Resource> findResources() {
 		return resourceService.getAllResources();
 	}
 
@@ -101,19 +96,4 @@ public class ResourceController {
 		List<Integer> ids = Arrays.asList(fakeId);
 		return resourceService.getResourcesById(ids);
 	}
-
-//	/**
-//	 * Takes in an array of ints (hopefully) and returns all other resources.
-//	 * @param ids
-//	 * @return
-//	 */
-//	@GetMapping("available/{id}")
-//	public List<Resource> getResources(@PathVariable int[] id) {
-//		Integer[] fakeId = new Integer[id.length];
-//		for(int i = 0; i < id.length; i++) {
-//			fakeId[i] = id[i];
-//		}
-//		List<Integer> ids = Arrays.asList(fakeId);
-//		return resourceService.getResourcesById(ids);
-//	}
 }

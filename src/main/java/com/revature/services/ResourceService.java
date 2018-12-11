@@ -47,20 +47,11 @@ public class ResourceService {
 	
 	//tested
 	public List<Resource> getResourcesById(Iterable<Integer> ids) {
-//		List<Resource> list = resourceRepo.findAll();
-//		for(int i = 0; i < list.size(); i++) {
-//			for(int j = 0; j < ids.length; j++) {
-//				if(list.get(i).getId() == ids[j])
-//					list.remove(i);
-//			}
-//		}
-//		return list;
 		return resourceRepo.findAllById(ids);
 	}
 	
 //tested
 	public Resource save(Resource resource) {
-//		resource.setBuilding(buildingRepo.getOne(resource.getBuildingId()));
 		return resourceRepo.save(resource);
 	}
 	
@@ -83,7 +74,6 @@ public class ResourceService {
 			List<Building> buildings = campus.getBuildings();
 			for(int i = 0; i < buildings.size(); i++) {
 				List<Resource> tmp = resourceRepo.findAllByBuilding_Id(buildings.get(i).getId());
-				System.out.println(tmp);
 				resources.addAll(tmp);
 			}
 		}
@@ -92,7 +82,6 @@ public class ResourceService {
 
 	public List<Resource> getAllResources() {
 		List<Resource> list = resourceRepo.findAll();
-		System.out.println(list);
 		return list;
 	}
 }
