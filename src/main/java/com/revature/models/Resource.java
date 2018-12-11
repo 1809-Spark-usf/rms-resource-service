@@ -33,7 +33,6 @@ public class Resource {
 	private Campus campus;
 	@ManyToOne
 	@JoinColumn(name="building_id", nullable=false)
-	@JsonIgnore
 	private Building building;
 	@Transient
 	private int buildingId;
