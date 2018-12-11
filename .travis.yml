@@ -16,4 +16,4 @@ jobs:
       script: mvn package
       
     - stage: quality
-      script: mvn test org.jacoco:jacoco-maven-plugin:prepare-agent sonar:sonar
+      script: mvn verify sonar:sonar
