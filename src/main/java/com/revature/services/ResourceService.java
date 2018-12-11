@@ -64,7 +64,10 @@ public class ResourceService {
 		return resourceRepo.save(resource);
 	}
 	
-	
+	//1. After test is run, resource.id value is equal to parameter id
+	//2. When resource.building is null, value of building will be set to mockBuildingRepo.getOne return value
+	//3. When resource.building is not null, value of building will not be set to mockBuildingRepo.getOne return value
+	//4. resourceRepo.save is called with resource as argument and updateResource returns value returned by mockResourceRepo.save
  
 	public void updateResource(Resource resource, int id) {
 		resource.setId(id);
@@ -72,6 +75,7 @@ public class ResourceService {
 			resource.setBuilding(buildingRepo.getOne(resource.getBuildingId()));
 		resourceRepo.save(resource);
 	}
+	
 //tested
 	public List<Resource> getResourceByBuildingId(int id) {
 		return resourceRepo.findAllByBuilding_Id(id);

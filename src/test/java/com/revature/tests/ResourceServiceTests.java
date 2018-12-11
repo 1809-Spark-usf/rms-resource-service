@@ -1,14 +1,18 @@
 package com.revature.tests;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.List;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.web.client.HttpClientErrorException;
 
 import com.revature.enumerations.Type;
 import com.revature.exception.BadRequestException;
@@ -54,11 +58,21 @@ public class ResourceServiceTests {
 	 * ResourceRepository with the String "Not Found" the ResourceRepository will
 	 * return null. this is an example of a stub method
 	 */
-	@Test(expected = BadRequestException.class)
+	@Test(expected = HttpClientErrorException.class)
 	public void TestgetResourceById() throws Exception {
 		// because this is the request expected.
-		when(mockResourceRepository.findById(0)).thenThrow(BadRequestException.class);
+		when(mockResourceRepository.findById(0)).thenReturn(Optional.empty());
 		resourceService.getResourceById(0);
+	}
+	
+	@Test
+	public void testGetResourceExpected() throws Exception {
+		Resource resource = new Resource();
+		int id = 10;
+		when(mockResourceRepository.findById(id)).thenReturn(Optional.of(resource));
+		Resource result = resourceService.getResourceById(id);
+		assertEquals(resource, result);
+		
 	}
 
 	// List<Resource> getResourcesById
