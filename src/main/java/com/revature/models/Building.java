@@ -83,7 +83,7 @@ public class Building {
 	}
 	public Building() {
 		super();
-		// TODO Auto-generated constructor stub
+		this.name = " ";
 	}
 	@Override
 	public String toString() {

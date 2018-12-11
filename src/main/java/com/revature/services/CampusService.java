@@ -22,14 +22,6 @@ public class CampusService {
 		this.campusRepo = campusRepo;
 		this.buildingRepo = buildingRepo;
 	}
-	
-	
-
-
-//	public List<Building> getBuildings(int campus) {
-////		return campusRepo.findByCampusId(campus); 
-//	}
-
 
 	public List<Campus> getCampuses() {
 		return campusRepo.findAll();

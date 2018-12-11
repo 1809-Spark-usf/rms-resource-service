@@ -95,6 +95,5 @@ public class Campus {
 
 	public Campus() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 }

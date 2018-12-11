@@ -28,11 +28,11 @@ public class Resource {
 	private int id;
 	@NotNull(message = "Type is required.")
 	private Type type;
+	@JsonIgnore
 	@Transient
 	private Campus campus;
 	@ManyToOne
 	@JoinColumn(name="building_id", nullable=false)
-	@JsonIgnore
 	private Building building;
 	@Transient
 	private int buildingId;
@@ -222,7 +222,27 @@ public class Resource {
 
 	public Resource() {
 		super();
-		// TODO Auto-generated constructor stub
+		this.name = " ";
+	}
+
+	public Resource(ResourceObject resource) {
+		super();
+		this.id = resource.getId();
+		this.type = resource.getType();
+		this.building = resource.getBuilding();
+		this.buildingId = resource.getBuildingId();
+		this.name = resource.getName();
+		this.disabled = resource.isDisabled();
+		this.inactive = resource.isInactive();
+		this.retired = resource.isRetired();
+		this.availableStartDate = resource.getAvailableStartDate();
+		this.reservableAfter = resource.getReservableAfter();
+		this.reservableBefore = resource.getReservableBefore();
+		this.availableDays = resource.getAvailableDays();
+		this.hasEthernet = resource.isHasEthernet();
+		this.hasComputer = resource.isHasComputer();
+		this.numberOfOutlets = resource.getNumberOfOutlets();
+		this.hasMicrophone = resource.isHasMicrophone();
 	}
 	
 	
