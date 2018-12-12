@@ -81,7 +81,6 @@ public class ResourceService {
 	}
 
 	public List<Resource> getAllResources() {
-		List<Resource> list = resourceRepo.findAll();
-		return list;
+		return resourceRepo.findAll();
 	}
 }
