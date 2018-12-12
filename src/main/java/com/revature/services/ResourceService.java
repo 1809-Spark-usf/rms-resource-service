@@ -45,7 +45,7 @@ public class ResourceService {
 	}
 
 	
-	//tested
+
 	public List<Resource> getResourcesById(Iterable<Integer> ids) {
 		return resourceRepo.findAllById(ids);
 	}

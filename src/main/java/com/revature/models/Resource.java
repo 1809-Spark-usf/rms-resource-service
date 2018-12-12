@@ -64,7 +64,10 @@ public class Resource {
 
 	public void setBuilding(Building building) {
 		this.building = building;
-		this.buildingId = building.getId();
+		if(building != null) {
+			this.buildingId = building.getId();
+		}
+		
 	}
 
 	public int getBuildingId() {
