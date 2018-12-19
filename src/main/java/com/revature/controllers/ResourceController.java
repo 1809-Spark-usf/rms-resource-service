@@ -46,12 +46,12 @@ public class ResourceController {
 		return campusService.getCampuses();
 	}
 
-	@GetMapping("/building/{id}")
+	@GetMapping("/buildings/{id}")
 	public List<Resource> getByBuildingId(@PathVariable int id) {
 		return resourceService.getResourceByBuildingId(id);
 	}
 
-	@GetMapping("/campus/{id}")
+	@GetMapping("/campuses/{id}")
 	public List<Resource> getByCampus(@PathVariable int id) {
 		return resourceService.getResourcesByCampus(campusService.getCampus(id));
 	}
