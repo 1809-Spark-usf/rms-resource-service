@@ -1,10 +1,10 @@
 spring:
   application:
     name: resources
-  
+
+  # Set current profile with local as default
   profiles:
     active: ${RMS_APP_PROFILE:local}  
-    
 ---
 spring:
   profiles: local
