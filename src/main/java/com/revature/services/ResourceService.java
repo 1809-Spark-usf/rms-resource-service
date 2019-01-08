@@ -16,12 +16,34 @@ import com.revature.models.Resource;
 import com.revature.repository.BuildingRepository;
 import com.revature.repository.ResourceRepository;
 
+/**
+ * The Class ResourceService.
+ * Service that talks to the repository
+ * to execute any actions involving
+ * the database.
+ * 
+ * It gets, saves, and update any resource 
+ * the controllers pass to this, and sends
+ * it to the repository to get/save/update
+ * to the database.
+ * 
+ *  @author 1811-Java-Nick | 12/27/2018
+ */
 @Service
 public class ResourceService {
 	
+	/** The resource repo. */
 	ResourceRepository resourceRepo;
+	
+	/** The building repo. */
 	BuildingRepository buildingRepo;
 
+	/**
+	 * Instantiates a new resource service.
+	 *
+	 * @param resourceRepo the resource repo
+	 * @param buildingRepo the building repo
+	 */
 	@Autowired
 	public ResourceService(ResourceRepository resourceRepo, BuildingRepository buildingRepo) {
 		super();
@@ -29,6 +51,12 @@ public class ResourceService {
 		this.buildingRepo = buildingRepo;
 	}
 
+	/**
+	 * Find resources.
+	 *
+	 * @param resource the resource
+	 * @return the list
+	 */
 	public List<Resource> findResources(Resource resource) {
 		if(resource.getBuildingId() > 0) {
 			resource.setBuilding(buildingRepo.getOne(resource.getBuildingId()));
@@ -38,6 +66,12 @@ public class ResourceService {
 	}
 
 
+	/**
+	 * Gets the resource by id.
+	 *
+	 * @param id the id
+	 * @return the resource by id
+	 */
 	//tested
 	public Resource getResourceById(int id) {
 		return resourceRepo.findById(id).orElseThrow(
@@ -46,10 +80,22 @@ public class ResourceService {
 
 	
 
+	/**
+	 * Gets the resources by id.
+	 *
+	 * @param ids the ids
+	 * @return the resources by id
+	 */
 	public List<Resource> getResourcesById(Iterable<Integer> ids) {
 		return resourceRepo.findAllById(ids);
 	}
 	
+/**
+ * Save.
+ *
+ * @param resource the resource
+ * @return the resource
+ */
 //tested
 	public Resource save(Resource resource) {
 		return resourceRepo.save(resource);
@@ -60,6 +106,12 @@ public class ResourceService {
 	//3. When resource.building is not null, value of building will not be set to mockBuildingRepo.getOne return value
 	//4. resourceRepo.save is called with resource as argument and updateResource returns value returned by mockResourceRepo.save
  
+	/**
+	 * Update resource.
+	 *
+	 * @param resource the resource
+	 * @param id the id
+	 */
 	public void updateResource(Resource resource, int id) {
 		resource.setId(id);
 		if(resource.getBuilding() == null)
@@ -67,10 +119,23 @@ public class ResourceService {
 		resourceRepo.save(resource);
 	}
 	
+/**
+ * Gets the resource by building id.
+ *
+ * @param id the id
+ * @return the resource by building id
+ */
 //tested
 	public List<Resource> getResourceByBuildingId(int id) {
 		return resourceRepo.findAllByBuilding_Id(id);
 	}
+
+/**
+ * Gets the resources by campus.
+ *
+ * @param campus the campus
+ * @return the resources by campus
+ */
 //tested
 	public List<Resource> getResourcesByCampus(Campus campus) {
 		List<Resource> resources = new ArrayList<>();
@@ -84,6 +149,11 @@ public class ResourceService {
 		return resources;
 	}
 
+	/**
+	 * Gets the all resources.
+	 *
+	 * @return the all resources
+	 */
 	public List<Resource> getAllResources() {
 		return resourceRepo.findAll();
 	}
