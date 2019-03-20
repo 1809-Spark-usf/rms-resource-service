@@ -1,20 +1,25 @@
 package com.revature.controllers;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import com.revature.models.Building;
 import com.revature.models.Campus;
 import com.revature.models.Resource;
 import com.revature.models.ResourceObject;
@@ -22,10 +27,8 @@ import com.revature.services.CampusService;
 import com.revature.services.ResourceService;
 
 /**
- * The Class ResourceController.
- * set of post and get request that talk to
- * the services to insert or retrieve information
- * from the database.
+ * The Class ResourceController. set of post and get request that talk to the
+ * services to insert or retrieve information from the database.
  * 
  * @author 1811-Java-Nick | 12/27/2018
  */
@@ -35,7 +38,7 @@ public class ResourceController {
 
 	/** The resource service. */
 	ResourceService resourceService;
-	
+
 	/** The campus service. */
 	CampusService campusService;
 
@@ -43,7 +46,7 @@ public class ResourceController {
 	 * Instantiates a new resource controller.
 	 *
 	 * @param resourceService the resource service.
-	 * @param campusService the campus service.
+	 * @param campusService   the campus service.
 	 */
 	@Autowired
 	public ResourceController(ResourceService resourceService, CampusService campusService) {
@@ -59,14 +62,24 @@ public class ResourceController {
 	 * @return the resource that was saved in the database.
 	 */
 	@PostMapping("")
-	public Resource saveResource(@RequestBody ResourceObject resource) {
-		resource.setBuilding(campusService.getBuilding(resource.getBuildingId()));
+	@ResponseStatus(HttpStatus.CREATED)
+	public Resource saveResource(ResourceObject resource) throws Exception {
+//		System.out.println(resource.getBuildingId());
+		if (resource.getBuildingId() == 0) {
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Empty body in the request");
+		}
+		try {
+			Building building = campusService.getBuilding(resource.getBuildingId());
+			resource.setBuilding(building);
+		} catch (EntityNotFoundException e) {
+			throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
+		}
 		return resourceService.save(new Resource(resource));
+
 	}
 
 	/**
-	 * Gets the list of buildings (campus)
-	 * from the database.
+	 * Gets the list of buildings (campus) from the database.
 	 *
 	 * @return the list of campus.
 	 */
@@ -76,8 +89,7 @@ public class ResourceController {
 	}
 
 	/**
-	 * Gets the list of resources by 
-	 * the building id.
+	 * Gets the list of resources by the building id.
 	 *
 	 * @param id the building ID.
 	 * @return the list of resources.
@@ -88,8 +100,7 @@ public class ResourceController {
 	}
 
 	/**
-	 * Gets the list of resources by 
-	 * the campus id.
+	 * Gets the list of resources by the campus id.
 	 *
 	 * @param id the campus id
 	 * @return the list of resources
@@ -100,13 +111,11 @@ public class ResourceController {
 	}
 
 	/**
-	 * Takes in a resource and a id,
-	 * gets the resource from the 
-	 * database and replaces it with
-	 * the incoming resource.
+	 * Takes in a resource and a id, gets the resource from the database and
+	 * replaces it with the incoming resource.
 	 *
 	 * @param resource the resource object
-	 * @param id the id of the object you want to update
+	 * @param id       the id of the object you want to update
 	 */
 	@PutMapping("/{id}")
 	public void updateResource(@RequestBody ResourceObject resource, @PathVariable int id) {
@@ -124,8 +133,7 @@ public class ResourceController {
 	}
 
 	/**
-	 * Gets a specific resource by Id. 
-	 * Returns it or null.
+	 * Gets a specific resource by Id. Returns it or null.
 	 *
 	 * @param id the id of the resources
 	 * @return the list of resources
@@ -138,5 +146,12 @@ public class ResourceController {
 		}
 		List<Integer> ids = Arrays.asList(fakeId);
 		return resourceService.getResourcesById(ids);
+	}
+
+	@ExceptionHandler
+	public ResponseEntity<String> handleHttpClientException(HttpClientErrorException e) {
+		String message = e.getMessage();
+		return ResponseEntity.status(e.getStatusCode()).body(message);
+
 	}
 }

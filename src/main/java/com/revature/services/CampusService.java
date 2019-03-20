@@ -2,6 +2,8 @@ package com.revature.services;
 
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -58,8 +60,14 @@ public class CampusService {
 	 * @param id the building id
 	 * @return the building
 	 */
-	public Building getBuilding(int id) {
-		return buildingRepo.getOne(id);
+	public Building getBuilding(int id) throws EntityNotFoundException {
+		Building result;
+		try {
+			result = buildingRepo.getOne(id);
+		} catch(EntityNotFoundException e) {
+			throw e;
+		}
+		return result;
 	}
 
 

@@ -76,6 +76,11 @@ public class ResourceObject {
 	/** The has microphone. */
 	private boolean hasMicrophone;
 	
+	public ResourceObject() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 	/**
 	 * Gets the id.
 	 *
@@ -363,4 +368,16 @@ public class ResourceObject {
 	public void setHasMicrophone(boolean hasMicrophone) {
 		this.hasMicrophone = hasMicrophone;
 	}
+
+	@Override
+	public String toString() {
+		return "ResourceObject [id=" + id + ", type=" + type + ", building=" + building + ", buildingId=" + buildingId
+				+ ", name=" + name + ", disabled=" + disabled + ", inactive=" + inactive + ", retired=" + retired
+				+ ", availableStartDate=" + availableStartDate + ", reservableAfter=" + reservableAfter
+				+ ", reservableBefore=" + reservableBefore + ", availableDays=" + availableDays + ", hasEthernet="
+				+ hasEthernet + ", hasComputer=" + hasComputer + ", numberOfOutlets=" + numberOfOutlets
+				+ ", hasMicrophone=" + hasMicrophone + "]";
+	}
+	
+	
 }
