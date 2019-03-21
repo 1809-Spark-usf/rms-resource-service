@@ -166,7 +166,14 @@ public class ResourceController {
 			fakeId[i] = id[i];
 		}
 		List<Integer> ids = Arrays.asList(fakeId);
-		return resourceService.getResourcesById(ids);
+		List<Resource> result;
+		try {
+			result = resourceService.getResourcesById(ids);
+		} catch (DataAccessException e) {
+			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Something went wrong when getting the resources.");
+		}
+		return result;
 	}
 
 	@ExceptionHandler

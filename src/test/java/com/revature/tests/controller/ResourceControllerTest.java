@@ -308,7 +308,13 @@ public class ResourceControllerTest {
 	}
 	
 	@Test
-	public void resourceNotFoundGetResources() throws JsonProcessingException, Exception {
+	public void serverErrorFoundGetResources() throws JsonProcessingException, Exception {
+		String ids = "10, 20, 30";
 		
+		Mockito.when(mockResource.getResourcesById(anyList())).thenThrow(new DataIntegrityViolationException(null));
+		
+		mockMvc.perform(get("/" + ids).accept(MediaType.APPLICATION_JSON))
+				.andDo(print())
+				.andExpect(status().is5xxServerError());
 	}
 }

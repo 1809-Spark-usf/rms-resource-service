@@ -157,7 +157,7 @@ public class ResourceService {
 	 *
 	 * @return the all resources
 	 */
-	public List<Resource> getAllResources() {
+	public List<Resource> getAllResources() throws DataAccessException{
 		return resourceRepo.findAll();
 	}
 }
