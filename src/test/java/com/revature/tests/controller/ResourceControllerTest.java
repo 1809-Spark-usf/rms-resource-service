@@ -2,10 +2,16 @@ package com.revature.tests.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -15,6 +21,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -23,11 +30,18 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.controllers.ResourceController;
 import com.revature.models.Building;
+import com.revature.models.Campus;
 import com.revature.models.Resource;
 import com.revature.models.ResourceObject;
 import com.revature.services.CampusService;
 import com.revature.services.ResourceService;
 
+/**
+ * Tests for all functions in the ResourceController
+ * 
+ * @author Kyne Liu
+ *
+ */
 public class ResourceControllerTest {
 	
 	private MockMvc mockMvc;
@@ -49,6 +63,8 @@ public class ResourceControllerTest {
 		mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
 		om = new ObjectMapper();
 	}
+	
+	/*----------------Testing for saveResource method in ResourceController------------------*/
 	
 	@Test
 	public void successfulSaveResource() throws JsonProcessingException, Exception {
@@ -108,6 +124,191 @@ public class ResourceControllerTest {
 		
 	}
 	
-	
+	/*----------------Testing for getBuildings method in ResourceController------------------*/
 
+	@Test
+	public void succesfulGetBuildings() throws JsonProcessingException, Exception {
+		List<Campus> results = new ArrayList<>();
+		results.add(new Campus());
+		
+		Mockito.when(mockCampus.getCampuses()).thenReturn(results);
+		
+		mockMvc.perform(get("/campuses").accept(MediaType.APPLICATION_JSON))
+				.andDo(print())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(status().isOk())
+				.andExpect(content().bytes(om.writeValueAsBytes(results)));
+	}
+
+	// Not sure if there any other tests that can be written for this one since the mockCampus.getCampuses
+	// will never throw an exception
+//	@Test
+//	public void exceptionThrownFOrGetBuildings() {
+//		Mockito.when(mockCampus.getCampuses()).thenThrow(throwableType)
+//	}
+	
+	/*----------------Testing for getBuildingById method in ResourceController------------------*/
+	
+	@Test
+	public void successfulGetBuildingById() throws JsonProcessingException, Exception {
+		int targetId = 10;
+		List<Resource> result = new ArrayList<>();
+		Resource targetResource = new Resource();
+		targetResource.setId(targetId);
+		result.add(targetResource);
+		
+		Mockito.when(mockResource.getResourceByBuildingId(targetId)).thenReturn(result);
+		
+		mockMvc.perform(get("/building/" + targetId).accept(MediaType.APPLICATION_JSON)
+													.contentType(MediaType.APPLICATION_JSON))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(content().bytes(om.writeValueAsBytes(result)));
+	}
+	
+	//Test if the resource id is not found in the database
+	@Test
+	public void badIdGetBuildingById() throws JsonProcessingException, Exception {
+		int badId = 3;
+		
+		Mockito.when(mockResource.getResourceByBuildingId(badId)).thenThrow(new EntityNotFoundException());
+		
+		mockMvc.perform(get("/building/" + badId).accept(MediaType.APPLICATION_JSON)
+												 .contentType(MediaType.APPLICATION_JSON))
+				.andDo(print())
+				.andExpect(status().isNotFound());
+	}
+	
+	/*----------------Testing for getByCampus method in ResourceController------------------*/
+	
+	@Test
+	public void successfulGetByCampus() throws JsonProcessingException, Exception {
+		int targetCampusId = 10;
+		Campus targetCampus = new Campus();
+		targetCampus.setId(targetCampusId);
+		Resource resultResouce = new Resource();
+		
+		List<Resource> result = new ArrayList<>();
+		result.add(resultResouce);
+		
+		Mockito.when(mockCampus.getCampus(targetCampusId)).thenReturn(targetCampus);
+		Mockito.when(mockResource.getResourcesByCampus(targetCampus)).thenReturn(result);
+		
+		mockMvc.perform(get("/campus/" + targetCampusId).accept(MediaType.APPLICATION_JSON)
+														.contentType(MediaType.APPLICATION_JSON))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(content().bytes(om.writeValueAsBytes(result)));
+	}
+	
+	@Test
+	public void campusNotFoundGetByCampus() throws JsonProcessingException, Exception {
+		int badId = 3;
+		List<Resource> emptyResult = new ArrayList<>();
+		
+		Mockito.when(mockCampus.getCampus(badId)).thenThrow(new EntityNotFoundException());
+		Mockito.when(mockResource.getResourcesByCampus(null)).thenReturn(emptyResult);
+		
+		mockMvc.perform(get("/campus/" + badId).accept(MediaType.APPLICATION_JSON)
+											   .contentType(MediaType.APPLICATION_JSON))
+				.andDo(print())
+				.andExpect(status().isNotFound());
+	}
+	
+	/*----------------Testing for updateResource method in ResourceController------------------*/
+	
+	@Test
+	public void successfulUpdateResource() throws JsonProcessingException, Exception {
+		int targetId = 10;
+		ResourceObject updateObject = new ResourceObject();
+		Resource result = new Resource(updateObject);
+		result.setId(targetId);
+		
+		Mockito.doNothing().when(mockResource).updateResource(result, targetId);
+		
+		mockMvc.perform(put("/" + targetId).accept(MediaType.APPLICATION_JSON)
+										   .contentType(MediaType.APPLICATION_JSON)
+										   .content(om.writeValueAsString(updateObject)))
+				.andDo(print())
+				.andExpect(status().isOk());
+	}
+	
+	//The resource to be updated could not be found
+	@Test
+	public void resourceNotFoundForUpdateResource() throws JsonProcessingException, Exception {
+		int badId = 3;
+		
+		Mockito.doThrow(new EntityNotFoundException()).when(mockResource).updateResource(any(Resource.class), anyInt());
+		
+		mockMvc.perform(put("/" + badId).accept(MediaType.APPLICATION_JSON)
+										.contentType(MediaType.APPLICATION_JSON)
+										.content(om.writeValueAsString(new ResourceObject())))
+				.andDo(print())
+				.andExpect(status().isNotFound());
+	}
+	
+	//The resource is found but the update fails for some reason
+	@Test
+	public void unsuccessfulUpdateResource() throws JsonProcessingException, Exception {
+		int targetId = 10;
+		ResourceObject input = new ResourceObject();
+		input.setId(targetId);
+		
+		Mockito.doThrow(new DataIntegrityViolationException(null)).when(mockResource).updateResource(any(Resource.class), anyInt());
+		
+		mockMvc.perform(put("/" + targetId).accept(MediaType.APPLICATION_JSON)
+										   .contentType(MediaType.APPLICATION_JSON)
+										   .content(om.writeValueAsString(input)))
+				.andDo(print())
+				.andExpect(status().is5xxServerError());
+	}
+	
+	/*----------------Testing for findResources method in ResourceController------------------*/
+	
+	@Test
+	public void successfulFindResources() throws JsonProcessingException, Exception {
+		List<Resource> result = new ArrayList<>();
+		result.add(new Resource());
+		
+		Mockito.when(mockResource.getAllResources()).thenReturn(result);
+		
+		mockMvc.perform(get("").accept(MediaType.APPLICATION_JSON)
+							   .contentType(MediaType.APPLICATION_JSON))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(content().bytes(om.writeValueAsBytes(result)));
+	}
+	
+	/*----------------Testing for getResources method in ResourceController------------------*/
+	
+	@Test
+	public void successfulGetResources() throws JsonProcessingException, Exception {
+		String arrayOfValidIds = "10, 20, 30";
+		List<Resource> result = new ArrayList<>();
+		Resource first = new Resource();
+		first.setId(10);
+		result.add(first);
+		Resource second = new Resource();
+		second.setId(20);
+		result.add(second);
+		Resource third = new Resource();
+		third.setId(30);
+		result.add(third);
+		
+		Mockito.when(mockResource.getResourcesById(anyList())).thenReturn(result);
+		
+		mockMvc.perform(get("/" + arrayOfValidIds).accept(MediaType.APPLICATION_JSON))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(content().bytes(om.writeValueAsBytes(result)));
+	}
+	
+	@Test
+	public void resourceNotFoundGetResources() throws JsonProcessingException, Exception {
+		
+	}
 }

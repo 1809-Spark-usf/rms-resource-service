@@ -79,7 +79,7 @@ public class CampusService {
 	 * @param id the campus id
 	 * @return the campus
 	 */
-	public Campus getCampus(int id) {
+	public Campus getCampus(int id) throws EntityNotFoundException {
 		return campusRepo.getOne(id);
 	}
 

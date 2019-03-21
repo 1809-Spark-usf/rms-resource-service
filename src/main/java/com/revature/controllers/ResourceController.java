@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -63,8 +64,7 @@ public class ResourceController {
 	 */
 	@PostMapping("")
 	@ResponseStatus(HttpStatus.CREATED)
-	public Resource saveResource(ResourceObject resource) throws Exception {
-//		System.out.println(resource.getBuildingId());
+	public Resource saveResource(@RequestBody ResourceObject resource) throws Exception {
 		if (resource.getBuildingId() == 0) {
 			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Empty body in the request");
 		}
@@ -96,7 +96,13 @@ public class ResourceController {
 	 */
 	@GetMapping("/building/{id}")
 	public List<Resource> getByBuildingId(@PathVariable int id) {
-		return resourceService.getResourceByBuildingId(id);
+		List<Resource> result;
+		try {
+			result = resourceService.getResourceByBuildingId(id);
+		} catch (EntityNotFoundException e) {
+			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "The Resource you are looking for does not exist");
+		}
+		return result;
 	}
 
 	/**
@@ -107,7 +113,13 @@ public class ResourceController {
 	 */
 	@GetMapping("/campus/{id}")
 	public List<Resource> getByCampus(@PathVariable int id) {
-		return resourceService.getResourcesByCampus(campusService.getCampus(id));
+		List<Resource> result;
+		try {
+			result = resourceService.getResourcesByCampus(campusService.getCampus(id));
+		} catch (EntityNotFoundException e) {
+			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "No campus with given id was found");
+		}
+		return result;
 	}
 
 	/**
@@ -119,7 +131,16 @@ public class ResourceController {
 	 */
 	@PutMapping("/{id}")
 	public void updateResource(@RequestBody ResourceObject resource, @PathVariable int id) {
-		resourceService.updateResource(new Resource(resource), id);
+		try {
+			resourceService.updateResource(new Resource(resource), id);
+		} catch (EntityNotFoundException e) {
+			throw new HttpClientErrorException(HttpStatus.NOT_FOUND,
+					"The resource you're trying to update doesn't exist");
+		} catch (DataAccessException e) {
+			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Something went wrong while trying to update the resource.");
+		}
+
 	}
 
 	/**
