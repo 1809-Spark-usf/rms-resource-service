@@ -7,6 +7,7 @@ import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -68,13 +69,17 @@ public class ResourceController {
 		if (resource.getBuildingId() == 0) {
 			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Empty body in the request");
 		}
+		Resource result;
 		try {
 			Building building = campusService.getBuilding(resource.getBuildingId());
 			resource.setBuilding(building);
+			result = resourceService.save(new Resource(resource));
 		} catch (EntityNotFoundException e) {
-			throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
+			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "The building that was provied was not found.");
+		} catch (DataAccessException e) {
+			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong.");
 		}
-		return resourceService.save(new Resource(resource));
+		return result;
 
 	}
 
@@ -85,7 +90,13 @@ public class ResourceController {
 	 */
 	@GetMapping("/campuses")
 	public List<Campus> getBuildings() {
-		return campusService.getCampuses();
+		List<Campus> result;
+		try {
+			result = campusService.getCampuses();
+		} catch(DataAccessException e) {
+			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong");
+		}
+		return result;
 	}
 
 	/**
@@ -101,6 +112,8 @@ public class ResourceController {
 			result = resourceService.getResourceByBuildingId(id);
 		} catch (EntityNotFoundException e) {
 			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "The Resource you are looking for does not exist");
+		} catch (DataAccessException e) {
+			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong");
 		}
 		return result;
 	}
@@ -118,6 +131,8 @@ public class ResourceController {
 			result = resourceService.getResourcesByCampus(campusService.getCampus(id));
 		} catch (EntityNotFoundException e) {
 			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "No campus with given id was found");
+		} catch (DataAccessException e) {
+			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong.");
 		}
 		return result;
 	}
@@ -150,7 +165,13 @@ public class ResourceController {
 	 */
 	@GetMapping("")
 	public List<Resource> findResources() {
-		return resourceService.getAllResources();
+		List<Resource> result;
+		try {
+			result = resourceService.getAllResources();
+		} catch(DataAccessException e) {
+			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong");
+		}
+		return result;
 	}
 
 	/**
