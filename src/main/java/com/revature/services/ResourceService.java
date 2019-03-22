@@ -3,7 +3,10 @@ package com.revature.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.HttpStatus;
@@ -112,7 +115,7 @@ public class ResourceService {
 	 * @param resource the resource
 	 * @param id the id
 	 */
-	public void updateResource(Resource resource, int id) {
+	public void updateResource(Resource resource, int id) throws EntityNotFoundException, DataAccessException {
 		resource.setId(id);
 		if(resource.getBuilding() == null)
 			resource.setBuilding(buildingRepo.getOne(resource.getBuildingId()));
@@ -154,7 +157,7 @@ public class ResourceService {
 	 *
 	 * @return the all resources
 	 */
-	public List<Resource> getAllResources() {
+	public List<Resource> getAllResources() throws DataAccessException{
 		return resourceRepo.findAll();
 	}
 }

@@ -2,7 +2,10 @@ package com.revature.services;
 
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.revature.models.Building;
@@ -58,8 +61,14 @@ public class CampusService {
 	 * @param id the building id
 	 * @return the building
 	 */
-	public Building getBuilding(int id) {
-		return buildingRepo.getOne(id);
+	public Building getBuilding(int id) throws EntityNotFoundException, DataAccessException {
+		Building result;
+		try {
+			result = buildingRepo.getOne(id);
+		} catch(EntityNotFoundException e) {
+			throw e;
+		}
+		return result;
 	}
 
 
@@ -71,7 +80,7 @@ public class CampusService {
 	 * @param id the campus id
 	 * @return the campus
 	 */
-	public Campus getCampus(int id) {
+	public Campus getCampus(int id) throws EntityNotFoundException {
 		return campusRepo.getOne(id);
 	}
 

@@ -1,20 +1,27 @@
 package com.revature.controllers;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import com.revature.models.Building;
 import com.revature.models.Campus;
 import com.revature.models.Resource;
 import com.revature.models.ResourceObject;
@@ -22,10 +29,8 @@ import com.revature.services.CampusService;
 import com.revature.services.ResourceService;
 
 /**
- * The Class ResourceController.
- * set of post and get request that talk to
- * the services to insert or retrieve information
- * from the database.
+ * The Class ResourceController. set of post and get request that talk to the
+ * services to insert or retrieve information from the database.
  * 
  * @author 1811-Java-Nick | 12/27/2018
  */
@@ -35,7 +40,7 @@ public class ResourceController {
 
 	/** The resource service. */
 	ResourceService resourceService;
-	
+
 	/** The campus service. */
 	CampusService campusService;
 
@@ -43,7 +48,7 @@ public class ResourceController {
 	 * Instantiates a new resource controller.
 	 *
 	 * @param resourceService the resource service.
-	 * @param campusService the campus service.
+	 * @param campusService   the campus service.
 	 */
 	@Autowired
 	public ResourceController(ResourceService resourceService, CampusService campusService) {
@@ -59,58 +64,98 @@ public class ResourceController {
 	 * @return the resource that was saved in the database.
 	 */
 	@PostMapping("")
-	public Resource saveResource(@RequestBody ResourceObject resource) {
-		resource.setBuilding(campusService.getBuilding(resource.getBuildingId()));
-		return resourceService.save(new Resource(resource));
+	@ResponseStatus(HttpStatus.CREATED)
+	public Resource saveResource(@RequestBody ResourceObject resource) throws Exception {
+		if (resource.getBuildingId() == 0) {
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Empty body in the request");
+		}
+		Resource result;
+		try {
+			Building building = campusService.getBuilding(resource.getBuildingId());
+			resource.setBuilding(building);
+			result = resourceService.save(new Resource(resource));
+		} catch (EntityNotFoundException e) {
+			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "The building that was provied was not found.");
+		} catch (DataAccessException e) {
+			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong.");
+		}
+		return result;
+
 	}
 
 	/**
-	 * Gets the list of buildings (campus)
-	 * from the database.
+	 * Gets the list of buildings (campus) from the database.
 	 *
 	 * @return the list of campus.
 	 */
 	@GetMapping("/campuses")
 	public List<Campus> getBuildings() {
-		return campusService.getCampuses();
+		List<Campus> result;
+		try {
+			result = campusService.getCampuses();
+		} catch(DataAccessException e) {
+			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong");
+		}
+		return result;
 	}
 
 	/**
-	 * Gets the list of resources by 
-	 * the building id.
+	 * Gets the list of resources by the building id.
 	 *
 	 * @param id the building ID.
 	 * @return the list of resources.
 	 */
 	@GetMapping("/building/{id}")
 	public List<Resource> getByBuildingId(@PathVariable int id) {
-		return resourceService.getResourceByBuildingId(id);
+		List<Resource> result;
+		try {
+			result = resourceService.getResourceByBuildingId(id);
+		} catch (EntityNotFoundException e) {
+			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "The Resource you are looking for does not exist");
+		} catch (DataAccessException e) {
+			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong");
+		}
+		return result;
 	}
 
 	/**
-	 * Gets the list of resources by 
-	 * the campus id.
+	 * Gets the list of resources by the campus id.
 	 *
 	 * @param id the campus id
 	 * @return the list of resources
 	 */
 	@GetMapping("/campus/{id}")
 	public List<Resource> getByCampus(@PathVariable int id) {
-		return resourceService.getResourcesByCampus(campusService.getCampus(id));
+		List<Resource> result;
+		try {
+			result = resourceService.getResourcesByCampus(campusService.getCampus(id));
+		} catch (EntityNotFoundException e) {
+			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "No campus with given id was found");
+		} catch (DataAccessException e) {
+			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong.");
+		}
+		return result;
 	}
 
 	/**
-	 * Takes in a resource and a id,
-	 * gets the resource from the 
-	 * database and replaces it with
-	 * the incoming resource.
+	 * Takes in a resource and a id, gets the resource from the database and
+	 * replaces it with the incoming resource.
 	 *
 	 * @param resource the resource object
-	 * @param id the id of the object you want to update
+	 * @param id       the id of the object you want to update
 	 */
 	@PutMapping("/{id}")
 	public void updateResource(@RequestBody ResourceObject resource, @PathVariable int id) {
-		resourceService.updateResource(new Resource(resource), id);
+		try {
+			resourceService.updateResource(new Resource(resource), id);
+		} catch (EntityNotFoundException e) {
+			throw new HttpClientErrorException(HttpStatus.NOT_FOUND,
+					"The resource you're trying to update doesn't exist");
+		} catch (DataAccessException e) {
+			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Something went wrong while trying to update the resource.");
+		}
+
 	}
 
 	/**
@@ -120,12 +165,17 @@ public class ResourceController {
 	 */
 	@GetMapping("")
 	public List<Resource> findResources() {
-		return resourceService.getAllResources();
+		List<Resource> result;
+		try {
+			result = resourceService.getAllResources();
+		} catch(DataAccessException e) {
+			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong");
+		}
+		return result;
 	}
 
 	/**
-	 * Gets a specific resource by Id. 
-	 * Returns it or null.
+	 * Gets a specific resource by Id. Returns it or null.
 	 *
 	 * @param id the id of the resources
 	 * @return the list of resources
@@ -137,6 +187,20 @@ public class ResourceController {
 			fakeId[i] = id[i];
 		}
 		List<Integer> ids = Arrays.asList(fakeId);
-		return resourceService.getResourcesById(ids);
+		List<Resource> result;
+		try {
+			result = resourceService.getResourcesById(ids);
+		} catch (DataAccessException e) {
+			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Something went wrong when getting the resources.");
+		}
+		return result;
+	}
+
+	@ExceptionHandler
+	public ResponseEntity<String> handleHttpClientException(HttpClientErrorException e) {
+		String message = e.getMessage();
+		return ResponseEntity.status(e.getStatusCode()).body(message);
+
 	}
 }
