@@ -6,7 +6,9 @@ import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import com.revature.models.Building;
 import com.revature.models.Campus;
@@ -66,7 +68,7 @@ public class CampusService {
 		try {
 			result = buildingRepo.getOne(id);
 		} catch(EntityNotFoundException e) {
-			throw e;
+			throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
 		}
 		return result;
 	}
