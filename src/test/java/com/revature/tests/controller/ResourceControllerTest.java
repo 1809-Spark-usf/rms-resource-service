@@ -37,7 +37,7 @@ import com.revature.services.CampusService;
 import com.revature.services.ResourceService;
 
 /**
- * Tests for all functions in the ResourceController
+ * Tests for all methods in the ResourceController
  * 
  * @author Kyne Liu
  *
