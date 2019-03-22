@@ -117,8 +117,13 @@ public class ResourceService {
 	 */
 	public void updateResource(Resource resource, int id) throws EntityNotFoundException, DataAccessException {
 		resource.setId(id);
-		if(resource.getBuilding() == null)
-			resource.setBuilding(buildingRepo.getOne(resource.getBuildingId()));
+		if(resource.getBuilding() == null) {
+			try {
+				resource.setBuilding(buildingRepo.getOne(resource.getBuildingId()));
+			} catch(EntityNotFoundException e) {
+				throw e;
+			}
+		}
 		resourceRepo.save(resource);
 	}
 	
@@ -148,6 +153,8 @@ public class ResourceService {
 				List<Resource> tmp = resourceRepo.findAllByBuilding_Id(buildings.get(i).getId());
 				resources.addAll(tmp);
 			}
+		} else {
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Campus is null");
 		}
 		return resources;
 	}
